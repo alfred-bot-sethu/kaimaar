@@ -1,11 +1,18 @@
 import { Suspense } from 'react';
 import { ListingDetail } from '@/components/shared/ListingDetail';
 import { Metadata } from 'next';
+import { MOCK_LISTINGS } from '@/lib/mock-data';
 
 interface ListingPageProps {
   params: Promise<{
     id: string;
   }>;
+}
+
+export async function generateStaticParams() {
+  return MOCK_LISTINGS.map((listing) => ({
+    id: listing.id,
+  }));
 }
 
 export async function generateMetadata({
