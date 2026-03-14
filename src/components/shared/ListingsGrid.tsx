@@ -2,9 +2,8 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useListings } from '@/hooks/use-listings';
-import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
-import { Search, MoreHorizontal, Video } from 'lucide-react';
+import { MoreHorizontal, Video } from 'lucide-react';
 import { Listing } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { getAvatarColor, getInitial } from '@/lib/avatar';
@@ -95,49 +94,29 @@ function FeedCard({ listing }: FeedCardProps) {
 
 export function ListingsGrid() {
   const { data: allListings, isLoading: queryLoading, error } = useListings();
-  const [searchTerm, setSearchTerm] = useState('');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [isFetching, setIsFetching] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  // Filter listings based on search term
-  const filteredListings = useMemo(() => {
-    if (!allListings) return [];
-    const query = searchTerm.toLowerCase().trim();
-    if (!query) return allListings;
-    return allListings.filter((l) => {
-      return (
-        l.title.toLowerCase().includes(query) ||
-        l.category.toLowerCase().includes(query) ||
-        l.location.toLowerCase().includes(query)
-      );
-    });
-  }, [allListings, searchTerm]);
-
-  // Cycle through filtered listings if visibleCount exceeds length
+  // Cycle through all listings if visibleCount exceeds length
   const visibleListings = useMemo(() => {
-    if (filteredListings.length === 0) return [];
-    return Array.from({ length: Math.min(visibleCount, filteredListings.length * 3) }, (_, i) => ({
-      ...filteredListings[i % filteredListings.length],
+    if (!allListings || allListings.length === 0) return [];
+    return Array.from({ length: Math.min(visibleCount, allListings.length * 3) }, (_, i) => ({
+      ...allListings[i % allListings.length],
       // Make key unique for cycled items
-      _key: `${filteredListings[i % filteredListings.length].id}-${Math.floor(i / filteredListings.length)}`,
+      _key: `${allListings[i % allListings.length].id}-${Math.floor(i / allListings.length)}`,
     }));
-  }, [filteredListings, visibleCount]);
-
-  // Reset visibleCount when search changes
-  useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [searchTerm]);
+  }, [allListings, visibleCount]);
 
   // IntersectionObserver for infinite scroll
   const loadMore = useCallback(async () => {
-    if (isFetching || filteredListings.length === 0) return;
+    if (isFetching || !allListings || allListings.length === 0) return;
     setIsFetching(true);
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 600));
     setVisibleCount((prev) => prev + PAGE_SIZE);
     setIsFetching(false);
-  }, [isFetching, filteredListings.length]);
+  }, [isFetching, allListings]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -191,33 +170,11 @@ export function ListingsGrid() {
 
   return (
     <div className="mx-auto w-full max-w-[480px]" style={{ paddingBottom: '80px' }}>
-      {/* Search bar */}
-      <div className="px-3 py-4">
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Search for items, brands, categories..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-      </div>
-
-      {/* Heading */}
-      <div className="px-3 pb-4">
-        <h1 className="text-2xl font-bold text-gray-900">Browse Listings</h1>
-        <p className="mt-1 text-sm text-gray-500">Discover pre-loved items from verified sellers.</p>
-      </div>
-
       {/* Empty state */}
-      {filteredListings.length === 0 ? (
+      {!allListings || allListings.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16">
-          <p className="text-base font-semibold text-gray-900">
-            No listings found for &quot;{searchTerm}&quot;
-          </p>
-          <p className="mt-2 text-sm text-gray-500">Try a different keyword</p>
+          <p className="text-base font-semibold text-gray-900">No listings available</p>
+          <p className="mt-2 text-sm text-gray-500">Check back soon</p>
         </div>
       ) : (
         <>

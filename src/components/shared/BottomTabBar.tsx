@@ -2,12 +2,13 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Search, Plus, User } from 'lucide-react';
+import { Home, Search, Plus, LayoutGrid, User } from 'lucide-react';
 
 const tabs = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/search', label: 'Search', icon: Search },
   { href: '/sell', label: null, icon: Plus, isPrimary: true },
+  { href: '/categories', label: 'Categories', icon: LayoutGrid },
   { href: '/account', label: 'Account', icon: User },
 ];
 
