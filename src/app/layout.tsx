@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { Header } from '@/components/shared/Header';
+import { BottomTabBar } from '@/components/shared/BottomTabBar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({
           <main className="bg-gray-50 min-h-screen">
             {children}
           </main>
+          <BottomTabBar />
         </QueryProvider>
       </body>
     </html>
