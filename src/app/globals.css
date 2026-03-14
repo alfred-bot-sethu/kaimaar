@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply border-gray-200;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white;
+}
+
+/* Utility classes */
+.container-max {
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+}
